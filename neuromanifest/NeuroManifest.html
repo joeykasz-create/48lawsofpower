@@ -1,0 +1,463 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>NeuroManifest — Prototype</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,300;1,9..144,400;1,9..144,500&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles/tokens.css">
+<style>
+  html, body { margin: 0; padding: 0; background: #E9E4DA; color: #0A2540; font-family: "Inter", system-ui, sans-serif; min-height: 100vh; }
+  body { overflow-x: hidden; }
+
+  /* Viewer shell */
+  .viewer {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding: 48px 24px 120px;
+    background:
+      radial-gradient(1200px 800px at 80% -10%, rgba(10,37,64,0.08), transparent 60%),
+      radial-gradient(1200px 800px at -10% 110%, rgba(64,224,208,0.05), transparent 60%),
+      #E9E4DA;
+  }
+  .viewer__title {
+    max-width: 880px; margin: 0 auto 28px; width: 100%;
+    display: flex; justify-content: space-between; align-items: baseline;
+  }
+  .viewer__title h1 {
+    font-family: "Fraunces", serif; font-weight: 400; font-size: 22px;
+    letter-spacing: -0.01em; margin: 0; color: #0A2540;
+  }
+  .viewer__title h1 em { color: #0A2540; font-weight: 300; }
+  .viewer__meta {
+    font-family: "JetBrains Mono", monospace; font-size: 10px;
+    letter-spacing: 0.22em; text-transform: uppercase; color: #6B7A8C;
+  }
+
+  /* Stage that scales the page down on narrow viewports */
+  .stage {
+    display: flex; justify-content: center;
+    perspective: 2200px;
+    min-height: 1123px;
+  }
+  .book {
+    position: relative;
+    width: 794px; height: 1123px;
+    transform-style: preserve-3d;
+  }
+  .book__slot {
+    position: absolute; inset: 0;
+    display: flex; justify-content: center; align-items: flex-start;
+  }
+  .book__page-wrap {
+    position: absolute; inset: 0;
+    transition: transform 520ms cubic-bezier(.77,0,.18,1), opacity 360ms ease;
+    transform-origin: left center;
+    backface-visibility: hidden;
+  }
+  .book__page-wrap.is-current { transform: rotateY(0); opacity: 1; z-index: 3; }
+  .book__page-wrap.is-prev    { transform: rotateY(8deg) translateX(-18px); opacity: 0; pointer-events: none; z-index: 1; }
+  .book__page-wrap.is-next    { transform: rotateY(-8deg) translateX(18px); opacity: 0; pointer-events: none; z-index: 1; }
+
+  /* Controls */
+  .toolbar {
+    position: fixed; left: 0; right: 0; bottom: 24px;
+    display: flex; justify-content: center; z-index: 50;
+    pointer-events: none;
+  }
+  .toolbar__inner {
+    pointer-events: auto;
+    background: rgba(6,21,40,0.92);
+    backdrop-filter: blur(12px);
+    color: #F6F2EA;
+    border-radius: 999px;
+    padding: 8px 10px;
+    display: flex; align-items: center; gap: 6px;
+    box-shadow: 0 18px 50px -12px rgba(6,21,40,0.5), 0 4px 12px rgba(6,21,40,0.2);
+    font-family: "Inter", sans-serif;
+    font-size: 12px;
+  }
+  .tbtn {
+    border: 0; background: transparent; color: #F6F2EA;
+    padding: 8px 14px; border-radius: 999px; cursor: pointer;
+    font-family: inherit; font-size: 12px; letter-spacing: 0.02em;
+    display: inline-flex; align-items: center; gap: 8px;
+    transition: background 160ms ease;
+  }
+  .tbtn:hover { background: rgba(246,242,234,0.1); }
+  .tbtn--primary { background: #40E0D0; color: #0A2540; font-weight: 600; }
+  .tbtn--primary:hover { background: #6FF0E2; }
+  .tbtn[disabled] { opacity: 0.35; cursor: default; }
+  .tbtn__arrow { width: 14px; height: 14px; }
+  .tb-page {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px; letter-spacing: 0.15em; padding: 0 10px;
+    color: rgba(246,242,234,0.7);
+    min-width: 76px; text-align: center;
+  }
+  .tb-divider { width: 1px; height: 18px; background: rgba(246,242,234,0.15); }
+
+  /* Chapters strip */
+  .chapters {
+    max-width: 880px; margin: 20px auto 0; width: 100%;
+    display: flex; gap: 4px; overflow-x: auto; padding-bottom: 6px;
+  }
+  .chapters::-webkit-scrollbar { height: 4px; }
+  .chapters::-webkit-scrollbar-thumb { background: rgba(10,37,64,0.2); border-radius: 2px; }
+  .chip {
+    flex-shrink: 0;
+    border: 1px solid rgba(10,37,64,0.2);
+    background: transparent;
+    color: #0A2540;
+    padding: 8px 14px;
+    border-radius: 999px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 120ms ease;
+  }
+  .chip:hover { background: rgba(10,37,64,0.06); }
+  .chip.is-active { background: #0A2540; color: #F6F2EA; border-color: #0A2540; }
+
+  /* Tweaks panel */
+  .tweaks {
+    position: fixed; top: 24px; right: 24px; z-index: 60;
+    width: 300px;
+    background: rgba(246,242,234,0.97);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(10,37,64,0.1);
+    padding: 18px 20px 20px;
+    box-shadow: 0 24px 60px -15px rgba(6,21,40,0.3);
+    font-family: "Inter", sans-serif;
+    font-size: 12px;
+    color: #0A2540;
+    transform: translateY(0);
+    transition: transform 220ms ease, opacity 220ms ease;
+  }
+  .tweaks.is-hidden { transform: translateY(-20px); opacity: 0; pointer-events: none; }
+  .tweaks h3 {
+    margin: 0 0 16px; font-family: "Fraunces", serif; font-weight: 400;
+    font-size: 15px; letter-spacing: -0.01em; display: flex; justify-content: space-between; align-items: baseline;
+  }
+  .tweaks h3 .kw { font-family: "JetBrains Mono", monospace; font-size: 9px; letter-spacing: 0.2em; color: #6B7A8C; text-transform: uppercase; }
+  .tw-group { margin-bottom: 14px; }
+  .tw-group:last-child { margin-bottom: 0; }
+  .tw-label {
+    font-family: "JetBrains Mono", monospace; font-size: 9px;
+    letter-spacing: 0.2em; color: #6B7A8C; text-transform: uppercase;
+    margin-bottom: 6px; display: flex; justify-content: space-between;
+  }
+  .tw-opts { display: flex; gap: 4px; flex-wrap: wrap; }
+  .tw-opt {
+    border: 1px solid rgba(10,37,64,0.18);
+    background: transparent;
+    padding: 5px 10px; font-family: inherit; font-size: 11px;
+    cursor: pointer; color: #0A2540;
+    transition: all 120ms ease;
+  }
+  .tw-opt:hover { background: rgba(10,37,64,0.05); }
+  .tw-opt.is-on { background: #0A2540; color: #F6F2EA; border-color: #0A2540; }
+  .tw-swatches { display: flex; gap: 6px; }
+  .tw-sw {
+    width: 26px; height: 26px; border-radius: 50%; border: 2px solid transparent;
+    cursor: pointer; padding: 0;
+  }
+  .tw-sw.is-on { border-color: #0A2540; }
+
+  /* Page scale on narrow screens */
+  @media (max-width: 900px) {
+    .viewer { padding: 24px 12px 140px; }
+    .stage { transform: scale(0.55); transform-origin: top center; margin-bottom: -520px; }
+    .tweaks { width: 260px; right: 12px; top: 12px; }
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script>
+  const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+    "cover": "impact",
+    "palette": "royal",
+    "typo": "editorial",
+    "grain": true,
+    "dark": false,
+    "brain": "network"
+  }/*EDITMODE-END*/;
+  window.__TWEAKS__ = { ...TWEAK_DEFAULTS };
+</script>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="components/primitives.jsx"></script>
+<script type="text/babel" src="components/covers.jsx"></script>
+<script type="text/babel" src="components/week-pages.jsx"></script>
+<script type="text/babel" src="components/trackers.jsx"></script>
+<script type="text/babel" src="components/bonus.jsx"></script>
+
+<script type="text/babel">
+/* ============================================================
+   NeuroManifest — Prototype viewer
+   ============================================================ */
+
+const { useState, useEffect, useMemo, useRef } = React;
+
+function buildPages(tweaks) {
+  // Covers
+  let Cover = CoverEditorial;
+  if (tweaks.cover === "sobre") Cover = CoverSobre;
+  if (tweaks.cover === "impact") Cover = CoverImpact;
+
+  const pages = [
+    { id: "cover", label: "Couverture", section: "Cover", render: () => <Cover /> },
+    { id: "toc", label: "Sommaire", section: "Front", render: () => <TOCPage /> },
+  ];
+
+  // Weeks — each gets opener + interior (keep light: only S1 full, others opener)
+  WEEKS.forEach((w, i) => {
+    pages.push({
+      id: `w${w.n}-opener`,
+      label: `S${w.n} · ${w.title}`,
+      section: `Semaine ${w.n}`,
+      render: () => <WeekOpener week={w} />,
+    });
+    pages.push({
+      id: `w${w.n}-interior`,
+      label: `S${w.n} · Détail`,
+      section: `Semaine ${w.n}`,
+      render: () => <WeekInterior week={w} />,
+    });
+  });
+
+  // Trackers
+  pages.push({ id: "tracker-daily", label: "Tracker quotidien", section: "Trackers", render: () => <DailyTracker /> });
+  pages.push({ id: "tracker-weekly", label: "Tracker hebdo", section: "Trackers", render: () => <WeeklyTracker /> });
+
+  // Bonus
+  pages.push({ id: "bonus-audit", label: "Audit d'environnement", section: "Bonus", render: () => <EnvAudit /> });
+  pages.push({ id: "bonus-goals", label: "Objectifs écrits", section: "Bonus", render: () => <GoalsTemplate /> });
+  pages.push({ id: "bonus-ras", label: "Journal des preuves", section: "Bonus", render: () => <EvidenceJournal /> });
+  pages.push({ id: "bonus-cards", label: "Cartes de poche", section: "Bonus", render: () => <PocketCards /> });
+
+  return pages;
+}
+
+function usePersistentState(key, initial) {
+  const [v, setV] = useState(() => {
+    try { const raw = localStorage.getItem(key); if (raw != null) return JSON.parse(raw); } catch (e) {}
+    return initial;
+  });
+  useEffect(() => { try { localStorage.setItem(key, JSON.stringify(v)); } catch (e) {} }, [key, v]);
+  return [v, setV];
+}
+
+function App() {
+  const [tweaks, setTweaks] = usePersistentState("nm.tweaks.v1", window.__TWEAKS__);
+  const [idx, setIdx] = usePersistentState("nm.idx.v1", 0);
+  const [showTweaks, setShowTweaks] = useState(true);
+  const [editMode, setEditMode] = useState(false);
+
+  // sync to host TWEAK_DEFAULTS block for persistence
+  useEffect(() => {
+    window.parent.postMessage({ type: "__edit_mode_set_keys", edits: tweaks }, "*");
+  }, [tweaks]);
+
+  // Edit-mode protocol (show built-in tweaks via toolbar)
+  useEffect(() => {
+    const h = (e) => {
+      if (!e.data || typeof e.data !== "object") return;
+      if (e.data.type === "__activate_edit_mode") setEditMode(true);
+      if (e.data.type === "__deactivate_edit_mode") setEditMode(false);
+    };
+    window.addEventListener("message", h);
+    window.parent.postMessage({ type: "__edit_mode_available" }, "*");
+    return () => window.removeEventListener("message", h);
+  }, []);
+
+  const pages = useMemo(() => buildPages(tweaks), [tweaks]);
+  const safeIdx = Math.max(0, Math.min(idx, pages.length - 1));
+  const cur = pages[safeIdx];
+
+  const next = () => setIdx(i => Math.min(pages.length - 1, i + 1));
+  const prev = () => setIdx(i => Math.max(0, i - 1));
+
+  useEffect(() => {
+    const h = (e) => {
+      if (e.key === "ArrowRight" || e.key === "PageDown" || e.key === " ") { e.preventDefault(); next(); }
+      if (e.key === "ArrowLeft" || e.key === "PageUp") { e.preventDefault(); prev(); }
+    };
+    window.addEventListener("keydown", h);
+    return () => window.removeEventListener("keydown", h);
+  }, [pages.length]);
+
+  // Apply tweaks to root
+  const pageProps = {
+    "data-palette": tweaks.palette,
+    "data-typo": tweaks.typo,
+  };
+
+  // Build section chapters (jump points)
+  const chapters = useMemo(() => {
+    const seen = new Set();
+    const out = [];
+    pages.forEach((p, i) => {
+      if (!seen.has(p.section)) {
+        seen.add(p.section);
+        out.push({ section: p.section, idx: i });
+      }
+    });
+    return out;
+  }, [pages]);
+
+  return (
+    <div className="viewer" {...pageProps}>
+      <div className="viewer__title">
+        <h1>NeuroManifest <em style={{ fontStyle: "italic", color: "#6B7A8C" }}>— prototype interactif</em></h1>
+        <div className="viewer__meta">
+          Page {String(safeIdx + 1).padStart(2, "0")} / {String(pages.length).padStart(2, "0")} · <span style={{ color: "#0A2540" }}>{cur.section}</span>
+        </div>
+      </div>
+
+      <Chapters chapters={chapters} current={safeIdx} pages={pages} onJump={setIdx} />
+
+      <div className="stage">
+        <div className="book">
+          {pages.map((p, i) => {
+            const cls = i === safeIdx ? "is-current" : i < safeIdx ? "is-prev" : "is-next";
+            // Render only near pages for performance
+            if (Math.abs(i - safeIdx) > 1) return null;
+            return (
+              <div key={p.id} className={`book__page-wrap ${cls}`}>
+                <div {...pageProps} style={{ display: "flex", justifyContent: "center" }}>
+                  <PageSkin grain={tweaks.grain}>
+                    {p.render()}
+                  </PageSkin>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="toolbar">
+        <div className="toolbar__inner">
+          <button className="tbtn" onClick={prev} disabled={safeIdx === 0}>
+            <svg className="tbtn__arrow" viewBox="0 0 14 14"><polyline points="9,3 4,7 9,11" stroke="currentColor" strokeWidth="1.5" fill="none"/></svg>
+            Préc.
+          </button>
+          <div className="tb-divider" />
+          <div className="tb-page">{String(safeIdx + 1).padStart(2, "0")} / {String(pages.length).padStart(2, "0")}</div>
+          <div className="tb-divider" />
+          <button className="tbtn" onClick={next} disabled={safeIdx === pages.length - 1}>
+            Suivant
+            <svg className="tbtn__arrow" viewBox="0 0 14 14"><polyline points="5,3 10,7 5,11" stroke="currentColor" strokeWidth="1.5" fill="none"/></svg>
+          </button>
+          <div className="tb-divider" />
+          <button className="tbtn tbtn--primary" onClick={() => setShowTweaks(s => !s)}>
+            {showTweaks ? "Masquer Tweaks" : "Tweaks"}
+          </button>
+        </div>
+      </div>
+
+      <Tweaks tweaks={tweaks} setTweaks={setTweaks} hidden={!showTweaks} />
+    </div>
+  );
+}
+
+// Inject grain override globally per tweak
+function PageSkin({ grain, children }) {
+  return React.cloneElement(children, {
+    ...children.props,
+    "data-grain": grain ? "on" : "off",
+  });
+}
+
+function Chapters({ chapters, current, pages, onJump }) {
+  const activeSection = pages[current]?.section;
+  return (
+    <div className="chapters">
+      {chapters.map((c) => (
+        <button
+          key={c.section}
+          className={`chip ${activeSection === c.section ? "is-active" : ""}`}
+          onClick={() => onJump(c.idx)}
+        >
+          {c.section}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+function Tweaks({ tweaks, setTweaks, hidden }) {
+  const set = (k, v) => setTweaks(t => ({ ...t, [k]: v }));
+
+  return (
+    <div className={`tweaks ${hidden ? "is-hidden" : ""}`}>
+      <h3>
+        <span>Tweaks</span>
+        <span className="kw">NM · design system</span>
+      </h3>
+
+      <div className="tw-group">
+        <div className="tw-label"><span>Variation couverture</span><span>{tweaks.cover}</span></div>
+        <div className="tw-opts">
+          {[["sobre","Sobre"],["impact","Impactant"],["editorial","Éditorial"]].map(([k, l]) => (
+            <button key={k} className={`tw-opt ${tweaks.cover === k ? "is-on" : ""}`} onClick={() => set("cover", k)}>{l}</button>
+          ))}
+        </div>
+      </div>
+
+      <div className="tw-group">
+        <div className="tw-label"><span>Palette</span><span>{tweaks.palette}</span></div>
+        <div className="tw-swatches">
+          {[
+            ["marine", "#0A2540"],
+            ["midnight", "#050C18"],
+            ["royal", "#001F3F"],
+          ].map(([k, c]) => (
+            <button
+              key={k}
+              className={`tw-sw ${tweaks.palette === k ? "is-on" : ""}`}
+              style={{ background: c }}
+              onClick={() => set("palette", k)}
+              title={k}
+            />
+          ))}
+        </div>
+      </div>
+
+      <div className="tw-group">
+        <div className="tw-label"><span>Typographie</span><span>{tweaks.typo}</span></div>
+        <div className="tw-opts">
+          {[["editorial","Éditoriale"],["inter","Inter"],["satoshi","Satoshi"]].map(([k, l]) => (
+            <button key={k} className={`tw-opt ${tweaks.typo === k ? "is-on" : ""}`} onClick={() => set("typo", k)}>{l}</button>
+          ))}
+        </div>
+      </div>
+
+      <div className="tw-group">
+        <div className="tw-label"><span>Grain / texture</span><span>{tweaks.grain ? "on" : "off"}</span></div>
+        <div className="tw-opts">
+          {[[true,"Activé"],[false,"Désactivé"]].map(([k, l]) => (
+            <button key={String(k)} className={`tw-opt ${tweaks.grain === k ? "is-on" : ""}`} onClick={() => set("grain", k)}>{l}</button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(<App />);
+</script>
+</body>
+</html>
