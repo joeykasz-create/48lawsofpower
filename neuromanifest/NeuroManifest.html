@@ -309,14 +309,23 @@ function App() {
   const [idx, setIdx] = usePersistentState("nm.idx.v1", 0);
   const [showTweaks, setShowTweaks] = useState(true);
   const [editMode, setEditMode] = useState(false);
-  const isPrint = useMemo(() => {
+  const [printMode, setPrintMode] = useState(() => {
     if (typeof window === "undefined") return false;
-    return new URLSearchParams(window.location.search).get("print") === "1";
-  }, []);
+    const qs = new URLSearchParams(window.location.search).get("print") === "1";
+    const hash = window.location.hash === "#print";
+    return qs || hash;
+  });
+  const isPrint = printMode;
   useEffect(() => {
     if (isPrint) document.body.classList.add("is-print");
     else document.body.classList.remove("is-print");
   }, [isPrint]);
+
+  const exportPdf = () => {
+    setPrintMode(true);
+    // Wait one paint so every page is rendered, then open the print dialog.
+    setTimeout(() => { window.print(); }, 400);
+  };
 
   // sync to host TWEAK_DEFAULTS block for persistence
   useEffect(() => {
@@ -412,6 +421,10 @@ function App() {
           <button className="tbtn" onClick={next} disabled={safeIdx === pages.length - 1}>
             Suivant
             <svg className="tbtn__arrow" viewBox="0 0 14 14"><polyline points="5,3 10,7 5,11" stroke="currentColor" strokeWidth="1.5" fill="none"/></svg>
+          </button>
+          <div className="tb-divider" />
+          <button className="tbtn" onClick={exportPdf} title="Exporter en PDF">
+            Export PDF
           </button>
           <div className="tb-divider" />
           <button className="tbtn tbtn--primary" onClick={() => setShowTweaks(s => !s)}>
