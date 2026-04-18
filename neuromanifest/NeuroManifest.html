@@ -7,7 +7,172 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,300;1,9..144,400;1,9..144,500&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles/tokens.css">
+<style>
+/* ============================================================
+   NeuroManifest — Design tokens
+   Editorial · premium · neuro-science
+   ============================================================ */
+
+:root {
+  /* ---- Palettes (3 moods, toggled by [data-palette]) ---- */
+  --deep: #0A2540;
+  --deep-2: #0E2E50;
+  --ink: #061528;
+  --cyan: #40E0D0;
+  --cyan-bright: #00D4FF;
+  --paper: #F6F2EA;      /* warm off-white */
+  --paper-2: #EDE7DB;
+  --rule: #1B3A5E;       /* rule on deep bg */
+  --rule-paper: #C9BFAE; /* rule on paper bg */
+  --muted: #6B7A8C;
+  --ink-soft: #223147;
+  --gold: #C8A96A;
+
+  /* typography scale */
+  --fs-giant: clamp(96px, 12vw, 188px);
+  --fs-display: clamp(56px, 7vw, 104px);
+  --fs-h1: 48px;
+  --fs-h2: 32px;
+  --fs-h3: 22px;
+  --fs-body: 15px;
+  --fs-small: 12px;
+  --fs-eyebrow: 10.5px;
+  --fs-mono: 11px;
+
+  /* type families (overridable by tweaks) */
+  --ff-display: "Fraunces", "Canela", "Söhne", Georgia, serif;
+  --ff-sans: "Inter", "Söhne", -apple-system, system-ui, sans-serif;
+  --ff-mono: "JetBrains Mono", "IBM Plex Mono", ui-monospace, monospace;
+
+  /* page (A4 @ 96dpi design units) */
+  --pg-w: 794px;
+  --pg-h: 1123px;
+
+  /* spacing */
+  --pad: 56px;
+  --pad-sm: 32px;
+}
+
+[data-palette="marine"] {
+  --deep: #0A2540;
+  --deep-2: #0E2E50;
+  --ink: #061528;
+  --cyan: #40E0D0;
+  --paper: #F6F2EA;
+}
+[data-palette="midnight"] {
+  --deep: #050C18;
+  --deep-2: #0A1628;
+  --ink: #000308;
+  --cyan: #5FE3D4;
+  --paper: #F4EFE6;
+}
+[data-palette="royal"] {
+  --deep: #001F3F;
+  --deep-2: #0A2F5A;
+  --ink: #00132A;
+  --cyan: #00D4FF;
+  --paper: #F2EEE5;
+}
+
+[data-typo="inter"] {
+  --ff-display: "Inter", system-ui, sans-serif;
+  --ff-sans: "Inter", system-ui, sans-serif;
+}
+[data-typo="satoshi"] {
+  --ff-display: "Satoshi", "Inter", system-ui, sans-serif;
+  --ff-sans: "Satoshi", "Inter", system-ui, sans-serif;
+}
+[data-typo="editorial"] {
+  --ff-display: "Fraunces", Georgia, serif;
+  --ff-sans: "Inter", system-ui, sans-serif;
+}
+
+/* ============================================================
+   Page (A4)
+   ============================================================ */
+.page {
+  width: var(--pg-w);
+  height: var(--pg-h);
+  background: var(--paper);
+  color: var(--ink);
+  position: relative;
+  overflow: hidden;
+  font-family: var(--ff-sans);
+  font-size: var(--fs-body);
+  line-height: 1.55;
+  box-shadow:
+    0 1px 0 rgba(0,0,0,0.03),
+    0 30px 80px -20px rgba(6,21,40,0.25),
+    0 8px 24px -10px rgba(6,21,40,0.15);
+  border-radius: 2px;
+}
+.page--dark {
+  background: var(--deep);
+  color: var(--paper);
+}
+
+/* Grain overlay */
+.page[data-grain="on"]::after {
+  content: "";
+  position: absolute; inset: 0;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.5 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.55'/></svg>");
+  opacity: 0.08;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}
+.page--dark[data-grain="on"]::after {
+  mix-blend-mode: screen;
+  opacity: 0.05;
+}
+
+/* running header / footer */
+.page__running {
+  position: absolute;
+  left: var(--pad); right: var(--pad);
+  display: flex; justify-content: space-between; align-items: baseline;
+  font-family: var(--ff-mono);
+  font-size: var(--fs-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.page--dark .page__running { color: rgba(246,242,234,0.55); }
+.page__running--top { top: 36px; }
+.page__running--bottom { bottom: 36px; }
+
+/* utility */
+.eyebrow {
+  font-family: var(--ff-mono);
+  font-size: var(--fs-eyebrow);
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.page--dark .eyebrow { color: var(--cyan); }
+.hrule { height: 1px; background: var(--rule-paper); border: 0; }
+.page--dark .hrule { background: var(--rule); }
+.num-mono { font-family: var(--ff-mono); font-feature-settings: "tnum"; }
+
+/* Display serif treatment */
+.display {
+  font-family: var(--ff-display);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 0.92;
+}
+.display--italic { font-style: italic; font-weight: 300; }
+
+/* small caps label */
+.smallcaps {
+  font-family: var(--ff-sans);
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+</style>
 <style>
   html, body { margin: 0; padding: 0; background: #E9E4DA; color: #0A2540; font-family: "Inter", system-ui, sans-serif; min-height: 100vh; }
   body { overflow-x: hidden; }
@@ -242,11 +407,1108 @@
 <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
 
-<script type="text/babel" src="components/primitives.jsx"></script>
-<script type="text/babel" src="components/covers.jsx"></script>
-<script type="text/babel" src="components/week-pages.jsx"></script>
-<script type="text/babel" src="components/trackers.jsx"></script>
-<script type="text/babel" src="components/bonus.jsx"></script>
+<script type="text/babel">
+// ============================================================
+// NeuroManifest — Shared primitives (brain mark, rule, icons)
+// ============================================================
+
+// Neural brain mark — elegant connected-nodes graphic.
+// Variant:
+//   'network' = organic nodes + soft lines (default)
+//   'orbits'  = concentric + curves
+//   'grid'    = regular lattice
+//   'hemisphere' = two halves of brain
+function BrainMark({ variant = "network", size = 280, stroke = "#40E0D0", accent = "#40E0D0", bg = "transparent" }) {
+  const nodes = React.useMemo(() => {
+    // Deterministic pseudo-random nodes arranged around a central hub.
+    const pts = [];
+    const R = 100, cx = 150, cy = 150;
+    // Core
+    pts.push({ x: cx, y: cy, r: 4.5, core: true });
+    // Ring 1
+    const ring1 = 7;
+    for (let i = 0; i < ring1; i++) {
+      const a = (i / ring1) * Math.PI * 2 + 0.3;
+      const rr = R * 0.42 + (i % 2) * 8;
+      pts.push({ x: cx + Math.cos(a) * rr, y: cy + Math.sin(a) * rr, r: 2.2 });
+    }
+    // Ring 2
+    const ring2 = 11;
+    for (let i = 0; i < ring2; i++) {
+      const a = (i / ring2) * Math.PI * 2 + 0.1;
+      const rr = R * 0.78 + (i % 3) * 6 - 4;
+      pts.push({ x: cx + Math.cos(a) * rr, y: cy + Math.sin(a) * rr, r: 1.6 });
+    }
+    // Ring 3 (sparse, outer)
+    const ring3 = 13;
+    for (let i = 0; i < ring3; i++) {
+      const a = (i / ring3) * Math.PI * 2 + 0.7;
+      const rr = R * 1.08 + ((i * 37) % 11) - 5;
+      pts.push({ x: cx + Math.cos(a) * rr, y: cy + Math.sin(a) * rr, r: 1.1 });
+    }
+    return pts;
+  }, []);
+
+  // Build edges: from core to ring1, from ring1 to nearest ring2, ring2 to nearest ring3
+  const edges = React.useMemo(() => {
+    const es = [];
+    const core = nodes[0];
+    const r1 = nodes.slice(1, 8);
+    const r2 = nodes.slice(8, 19);
+    const r3 = nodes.slice(19);
+    r1.forEach(p => es.push([core, p]));
+    r1.forEach(p => {
+      // connect each r1 to 2 closest r2
+      const sorted = [...r2].sort((a, b) => dist(p, a) - dist(p, b));
+      es.push([p, sorted[0]]);
+      es.push([p, sorted[1]]);
+    });
+    r2.forEach(p => {
+      const sorted = [...r3].sort((a, b) => dist(p, a) - dist(p, b));
+      es.push([p, sorted[0]]);
+      if (Math.random() < 1) es.push([p, sorted[1]]);
+    });
+    return es;
+  }, [nodes]);
+
+  function dist(a, b) { return Math.hypot(a.x - b.x, a.y - b.y); }
+
+  return (
+    <svg viewBox="0 0 300 300" width={size} height={size} style={{ display: "block" }}>
+      {bg !== "transparent" && <rect width="300" height="300" fill={bg} />}
+      <defs>
+        <radialGradient id="bm-glow" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor={accent} stopOpacity="0.35" />
+          <stop offset="45%" stopColor={accent} stopOpacity="0.06" />
+          <stop offset="100%" stopColor={accent} stopOpacity="0" />
+        </radialGradient>
+      </defs>
+      <circle cx="150" cy="150" r="130" fill="url(#bm-glow)" />
+      <g stroke={stroke} strokeWidth="0.6" opacity="0.55" fill="none">
+        {edges.map((e, i) => (
+          <line key={i} x1={e[0].x} y1={e[0].y} x2={e[1].x} y2={e[1].y} />
+        ))}
+      </g>
+      <g fill={accent}>
+        {nodes.map((p, i) => (
+          <circle key={i} cx={p.x} cy={p.y} r={p.r} opacity={p.core ? 1 : 0.75 - (i > 18 ? 0.3 : 0.1)} />
+        ))}
+      </g>
+      {/* Inner concentric hints */}
+      <g fill="none" stroke={accent} strokeWidth="0.3" opacity="0.25">
+        <circle cx="150" cy="150" r="42" />
+        <circle cx="150" cy="150" r="78" />
+        <circle cx="150" cy="150" r="108" />
+      </g>
+    </svg>
+  );
+}
+
+// Geometric shape glyph — "solid geometric" iconography alternative to pictograms.
+// Each finding / week gets a distinct shape id (1..8).
+function GeoGlyph({ id = 1, size = 44, fg = "#0A2540", bg = "transparent" }) {
+  const s = size;
+  const shapes = {
+    1: <circle cx="22" cy="22" r="14" fill={fg} />,
+    2: <rect x="8" y="8" width="28" height="28" fill={fg} />,
+    3: <polygon points="22,6 38,36 6,36" fill={fg} />,
+    4: <polygon points="22,4 40,22 22,40 4,22" fill={fg} />,
+    5: <g fill={fg}><circle cx="22" cy="22" r="14" /><circle cx="22" cy="22" r="5" fill={bg === "transparent" ? "#F6F2EA" : bg} /></g>,
+    6: <g fill={fg}><rect x="6" y="6" width="14" height="14" /><rect x="24" y="24" width="14" height="14" /></g>,
+    7: <g fill={fg}><polygon points="22,6 38,22 22,38 6,22" /><circle cx="22" cy="22" r="4" fill={bg === "transparent" ? "#F6F2EA" : bg} /></g>,
+    8: <g fill={fg}><circle cx="14" cy="22" r="10" /><circle cx="30" cy="22" r="10" /></g>,
+  };
+  return (
+    <svg viewBox="0 0 44 44" width={s} height={s} style={{ display: "block" }}>
+      {shapes[id] || shapes[1]}
+    </svg>
+  );
+}
+
+// Tick box
+function TickBox({ checked = false, size = 14, onClick, color = "#0A2540" }) {
+  return (
+    <span
+      onClick={onClick}
+      style={{
+        display: "inline-block", width: size, height: size,
+        border: `1px solid ${color}`, background: checked ? color : "transparent",
+        position: "relative", cursor: onClick ? "pointer" : "default",
+        verticalAlign: "middle", flexShrink: 0,
+      }}
+    >
+      {checked && (
+        <svg viewBox="0 0 14 14" width={size} height={size}>
+          <polyline points="3,7 6,10 11,4" stroke="#F6F2EA" strokeWidth="2" fill="none" />
+        </svg>
+      )}
+    </span>
+  );
+}
+
+// Progress bar (thin, editorial)
+function ProgressBar({ value = 0, total = 8, height = 2, color = "#0A2540" }) {
+  return (
+    <div style={{ display: "flex", gap: 4, width: "100%" }}>
+      {Array.from({ length: total }).map((_, i) => (
+        <div key={i} style={{
+          flex: 1, height,
+          background: i < value ? color : "rgba(0,0,0,0.12)",
+        }} />
+      ))}
+    </div>
+  );
+}
+
+// Small caps label
+function Eyebrow({ children, color }) {
+  return <span className="eyebrow" style={{ color }}>{children}</span>;
+}
+
+// Running header for pages
+function Running({ left, right, position = "top" }) {
+  return (
+    <div className={`page__running page__running--${position}`}>
+      <span>{left}</span>
+      <span>{right}</span>
+    </div>
+  );
+}
+
+Object.assign(window, { BrainMark, GeoGlyph, TickBox, ProgressBar, Eyebrow, Running });
+
+</script>
+<script type="text/babel">
+// ============================================================
+// NeuroManifest — Cover variations (3)
+// A4 (794 × 1123). All share the same brand system.
+// ============================================================
+
+/* --- Variation A : SOBRE (contemplatif, espace dominant) ----- */
+function CoverSobre({ palette }) {
+  return (
+    <div className="page page--dark" data-grain="on" style={{ padding: "var(--pad)" }}>
+      <Running left="NeuroManifest" right="Édition 01 · 2026" />
+
+      {/* Top eyebrow block */}
+      <div style={{ position: "absolute", top: 110, left: 56, right: 56, display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
+        <div>
+          <div className="eyebrow" style={{ color: "var(--cyan)" }}>Protocole · 01</div>
+          <div style={{ height: 8 }} />
+          <div className="smallcaps" style={{ color: "rgba(246,242,234,0.55)" }}>Basé sur 7 découvertes Harvard</div>
+        </div>
+        <div style={{ textAlign: "right" }}>
+          <div className="num-mono" style={{ fontSize: 11, letterSpacing: "0.18em", color: "rgba(246,242,234,0.55)" }}>
+            08 SEMAINES
+          </div>
+          <div className="num-mono" style={{ fontSize: 11, letterSpacing: "0.18em", color: "rgba(246,242,234,0.55)", marginTop: 4 }}>
+            10 MIN / JOUR
+          </div>
+        </div>
+      </div>
+
+      {/* Central brain mark */}
+      <div style={{ position: "absolute", top: 260, left: "50%", transform: "translateX(-50%)" }}>
+        <BrainMark size={340} stroke="var(--cyan)" accent="var(--cyan)" />
+      </div>
+
+      {/* Title */}
+      <div style={{ position: "absolute", top: 650, left: 56, right: 56, textAlign: "center" }}>
+        <div className="display" style={{ fontSize: 92, color: "var(--paper)", letterSpacing: "-0.035em", lineHeight: 0.92 }}>
+          Neuro<span className="display--italic" style={{ color: "var(--cyan)" }}>Manifest</span>
+        </div>
+        <div style={{ height: 24 }} />
+        <div style={{ fontFamily: "var(--ff-display)", fontSize: 19, fontStyle: "italic", color: "rgba(246,242,234,0.72)", letterSpacing: "0.01em", maxWidth: 540, margin: "0 auto", lineHeight: 1.4 }}>
+          Le protocole pour recâbler ta réalité en juste deux mois.
+        </div>
+      </div>
+
+      {/* Footer */}
+      <div style={{ position: "absolute", bottom: 96, left: 56, right: 56, display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+        <div>
+          <div className="smallcaps" style={{ color: "rgba(246,242,234,0.45)" }}>Auteur</div>
+          <div style={{ height: 6 }} />
+          <div style={{ fontFamily: "var(--ff-display)", fontSize: 17, color: "var(--paper)" }}>Josef Friedrich Kasz</div>
+          <div className="num-mono" style={{ fontSize: 10, letterSpacing: "0.16em", color: "rgba(246,242,234,0.45)", marginTop: 3, textTransform: "uppercase" }}>
+            Programme de Méditation de Présence
+          </div>
+        </div>
+        <div style={{ textAlign: "right" }}>
+          <div className="smallcaps" style={{ color: "rgba(246,242,234,0.45)" }}>Livret</div>
+          <div className="num-mono" style={{ fontSize: 24, color: "var(--cyan)", marginTop: 6 }}>I / VIII</div>
+        </div>
+      </div>
+
+      <Running left="NM · PROTOCOL 01" right="FR / EN" position="bottom" />
+    </div>
+  );
+}
+
+/* --- Variation B : IMPACTANT (grand cerveau bleed, typo massive) --- */
+function CoverImpact({ palette }) {
+  return (
+    <div className="page page--dark" data-grain="on" style={{ padding: 0 }}>
+      {/* Huge brain bleed, top-right */}
+      <div style={{ position: "absolute", top: -120, right: -150, opacity: 1 }}>
+        <BrainMark size={780} stroke="var(--cyan)" accent="var(--cyan)" />
+      </div>
+
+      <Running left="NEUROMANIFEST" right="01" />
+
+      {/* Number column */}
+      <div style={{ position: "absolute", top: 110, left: 56, width: 180 }}>
+        <div style={{ borderTop: "1px solid rgba(64,224,208,0.4)", paddingTop: 10 }}>
+          <div className="num-mono" style={{ fontSize: 10, letterSpacing: "0.2em", color: "var(--cyan)", textTransform: "uppercase" }}>
+            Index
+          </div>
+          <div style={{ marginTop: 20, display: "grid", gridTemplateColumns: "24px 1fr", rowGap: 8, columnGap: 12, fontFamily: "var(--ff-mono)", fontSize: 10, letterSpacing: "0.08em", color: "rgba(246,242,234,0.7)", textTransform: "uppercase" }}>
+            <span>01</span><span>Recâblage</span>
+            <span>02</span><span>Filtrage</span>
+            <span>03</span><span>Chimie</span>
+            <span>04</span><span>Environnement</span>
+            <span>05</span><span>Conscience</span>
+            <span>06</span><span>Clarté</span>
+            <span>07</span><span>Consolidation</span>
+            <span>08</span><span>Intégration</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Massive title, bottom-aligned */}
+      <div style={{ position: "absolute", bottom: 120, left: 56, right: 56 }}>
+        <div className="display" style={{ fontSize: 168, color: "var(--paper)", letterSpacing: "-0.055em", lineHeight: 0.82 }}>
+          Neuro<br />
+          <span className="display--italic" style={{ color: "var(--cyan)" }}>Manifest.</span>
+        </div>
+        <div style={{ height: 32 }} />
+        <div style={{ display: "flex", gap: 60, alignItems: "flex-start", borderTop: "1px solid rgba(246,242,234,0.18)", paddingTop: 18 }}>
+          <div style={{ maxWidth: 380, fontFamily: "var(--ff-display)", fontStyle: "italic", fontWeight: 300, fontSize: 22, color: "var(--paper)", lineHeight: 1.32, letterSpacing: "-0.005em" }}>
+            Le protocole pour recâbler ta réalité en juste deux mois.
+          </div>
+          <div style={{ flex: 1 }} />
+          <div style={{ textAlign: "right" }}>
+            <div className="num-mono" style={{ fontSize: 11, letterSpacing: "0.18em", color: "var(--cyan)", textTransform: "uppercase" }}>
+              Josef F. Kasz
+            </div>
+            <div className="num-mono" style={{ fontSize: 10, letterSpacing: "0.14em", color: "rgba(246,242,234,0.55)", textTransform: "uppercase", marginTop: 6 }}>
+              8 SEM · 10 MIN/J · 7 FINDINGS
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <Running left="HARVARD · NEUROSCIENCE" right="EDITION 2026" position="bottom" />
+    </div>
+  );
+}
+
+/* --- Variation C : ÉDITORIAL (magazine, grille, chiffres en exergue) --- */
+function CoverEditorial({ palette }) {
+  return (
+    <div className="page" data-grain="on" style={{ padding: 0, background: "var(--paper)" }}>
+      {/* Editorial masthead bar */}
+      <div style={{ position: "absolute", top: 0, left: 0, right: 0, padding: "28px 56px", borderBottom: "1px solid var(--rule-paper)", display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
+        <div style={{ fontFamily: "var(--ff-display)", fontSize: 15, letterSpacing: "-0.01em", color: "var(--deep)" }}>
+          Neuro<span style={{ fontStyle: "italic" }}>Manifest</span>
+        </div>
+        <div className="num-mono" style={{ fontSize: 10, letterSpacing: "0.2em", color: "var(--muted)", textTransform: "uppercase" }}>
+          Vol. 01 · Édition Pilote · 2026 · №001
+        </div>
+      </div>
+
+      {/* Issue number as giant display */}
+      <div style={{ position: "absolute", top: 84, left: 56 }}>
+        <div style={{ display: "flex", alignItems: "flex-end", gap: 18 }}>
+          <div className="display" style={{ fontSize: 260, color: "var(--deep)", lineHeight: 0.78, letterSpacing: "-0.06em" }}>01</div>
+          <div style={{ paddingBottom: 24, maxWidth: 300 }}>
+            <div className="eyebrow" style={{ color: "var(--muted)" }}>Le protocole</div>
+            <div style={{ fontFamily: "var(--ff-display)", fontStyle: "italic", fontSize: 22, color: "var(--ink-soft)", lineHeight: 1.28, marginTop: 10 }}>
+              Recâbler sa réalité en deux mois, par la science du cerveau.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Brain figure card */}
+      <div style={{ position: "absolute", top: 440, left: 56, width: 310 }}>
+        <div style={{ background: "var(--deep)", aspectRatio: "1 / 1", display: "flex", alignItems: "center", justifyContent: "center", position: "relative" }}>
+          <BrainMark size={260} stroke="var(--cyan)" accent="var(--cyan)" />
+          <div style={{ position: "absolute", bottom: 10, left: 14, right: 14, display: "flex", justifyContent: "space-between", fontFamily: "var(--ff-mono)", fontSize: 9, letterSpacing: "0.2em", color: "rgba(246,242,234,0.6)", textTransform: "uppercase" }}>
+            <span>Fig. 01</span><span>Neural connectivity</span>
+          </div>
+        </div>
+        <div className="num-mono" style={{ fontSize: 9, letterSpacing: "0.18em", color: "var(--muted)", textTransform: "uppercase", marginTop: 10 }}>
+          Visuel · Réseau neuronal, protocole NM
+        </div>
+      </div>
+
+      {/* Right column — manifesto + meta */}
+      <div style={{ position: "absolute", top: 440, left: 400, right: 56, display: "flex", flexDirection: "column", gap: 28 }}>
+        <div>
+          <div className="eyebrow" style={{ color: "var(--cyan-bright)", fontWeight: 600 }}>Manifesto</div>
+          <div style={{ height: 12 }} />
+          <div className="display" style={{ fontSize: 56, color: "var(--deep)", letterSpacing: "-0.035em", lineHeight: 0.94 }}>
+            Ton cerveau <span className="display--italic">n'est pas</span> figé.
+          </div>
+        </div>
+        <div style={{ fontFamily: "var(--ff-display)", fontStyle: "italic", fontWeight: 300, fontSize: 18, color: "var(--ink-soft)", lineHeight: 1.45, maxWidth: 340 }}>
+          Huit semaines. Sept découvertes. Dix minutes par jour. Le protocole simple qui réécrit tes circuits profonds — et, à travers eux, ta réalité.
+        </div>
+        <div style={{ borderTop: "1px solid var(--rule-paper)", paddingTop: 14 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", rowGap: 10, fontSize: 11, color: "var(--muted)", fontFamily: "var(--ff-mono)", letterSpacing: "0.1em", textTransform: "uppercase" }}>
+            <div>Durée</div><div style={{ color: "var(--deep)" }}>08 semaines</div>
+            <div>Pratique</div><div style={{ color: "var(--deep)" }}>10 min / jour</div>
+            <div>Appui</div><div style={{ color: "var(--deep)" }}>Harvard · 7 findings</div>
+            <div>Format</div><div style={{ color: "var(--deep)" }}>Livret + audio</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Footer */}
+      <div style={{ position: "absolute", bottom: 36, left: 56, right: 56, display: "flex", justifyContent: "space-between", alignItems: "flex-end", borderTop: "1px solid var(--rule-paper)", paddingTop: 18 }}>
+        <div>
+          <div style={{ fontFamily: "var(--ff-display)", fontStyle: "italic", fontSize: 16, color: "var(--deep)" }}>
+            Josef Friedrich Kasz
+          </div>
+          <div className="num-mono" style={{ fontSize: 10, letterSpacing: "0.16em", color: "var(--muted)", textTransform: "uppercase", marginTop: 2 }}>
+            Programme de Méditation de Présence
+          </div>
+        </div>
+        <div className="num-mono" style={{ fontSize: 10, letterSpacing: "0.2em", color: "var(--muted)", textTransform: "uppercase" }}>
+          Cover · I / VIII
+        </div>
+      </div>
+    </div>
+  );
+}
+
+Object.assign(window, { CoverSobre, CoverImpact, CoverEditorial });
+
+</script>
+<script type="text/babel">
+// ============================================================
+// NeuroManifest — Interior pages: week template, TOC, opener
+// ============================================================
+
+const WEEKS = [
+  {
+    n: 1, title: "Recâblage",
+    subtitle: "Visualisation vivante",
+    finding: { n: 1, title: "Your thoughts physically rewire your brain", fr: "Tes pensées recâblent physiquement ton cerveau.", ref: "Pascual-Leone · Harvard Medical School · 1995" },
+    lede: "Les pianistes qui jouent mentalement reconstruisent les mêmes circuits moteurs que ceux qui jouent réellement. La pensée n'est pas un reflet du réel — elle en est un bâtisseur.",
+    practice: "Visualiser en 5 sens, 5 minutes, une scène de ta vie manifestée. Y sentir l'odeur, la lumière, le poids.",
+    audio: "NM-01 · Visualisation vivante · 11:42",
+    prompt: "Quelle scène précise choisis-tu ? Quels détails sensoriels la rendent réelle ?",
+  },
+  {
+    n: 2, title: "Filtrage",
+    subtitle: "Gratitude & RAS",
+    finding: { n: 2, title: "Gratitude measurably increases income", fr: "La gratitude augmente mesurablement les revenus.", ref: "Harvard Business Review · Emmons & McCullough" },
+    lede: "Le système réticulaire activateur (RAS) filtre chaque seconde 11 millions de bits de réalité. La gratitude recalibre ce filtre vers les opportunités.",
+    practice: "Écrire 3 gratitudes précises du matin. 5 min. Sens corporel à chaque item.",
+    audio: "NM-02 · Gratitude active · 09:58",
+    prompt: "Qu'as-tu remarqué aujourd'hui qui t'aurait échappé hier ?",
+  },
+  {
+    n: 3, title: "Chimie corporelle",
+    subtitle: "Postures de puissance",
+    finding: { n: 3, title: "Body posture changes your hormones in 2 minutes", fr: "La posture modifie tes hormones en deux minutes.", ref: "Cuddy, Carney, Yap · Harvard Business School" },
+    lede: "Deux minutes d'ouverture physique suffisent à élever la testostérone de 20% et réduire le cortisol de 25%. Le corps précède l'esprit.",
+    practice: "2 min de posture ouverte + 3 min de respiration 4-7-8.",
+    audio: "NM-03 · Corps souverain · 08:12",
+    prompt: "Quelle sensation dominait avant ? Après ?",
+  },
+  {
+    n: 4, title: "Environnement",
+    subtitle: "Habitudes automatiques",
+    finding: { n: 4, title: "Environment shapes behavior more than willpower", fr: "L'environnement façonne ton comportement plus que la volonté.", ref: "Wood · Duke / Harvard" },
+    lede: "45% de nos actes quotidiens sont des habitudes déclenchées par l'environnement — pas par la volonté. Change l'espace, change le résultat.",
+    practice: "Audit d'une pièce. Retirer 1 friction. Ajouter 1 déclencheur positif.",
+    audio: "NM-04 · Architecture du quotidien · 10:04",
+    prompt: "Quelle friction retirée aujourd'hui ? Quel déclencheur ajouté ?",
+  },
+  {
+    n: 5, title: "Conscience",
+    subtitle: "Méditation de Présence",
+    finding: { n: 5, title: "Meditation changes brain density in 8 weeks", fr: "La méditation modifie la densité cérébrale en 8 semaines.", ref: "Lazar · Harvard Massachusetts General Hospital" },
+    lede: "Huit semaines de pratique réduisent l'amygdale de stress et densifient le cortex préfrontal. Tu tiens, littéralement, les clés de ta sérénité.",
+    practice: "5 min de Méditation de Présence + 5 min de scan corporel.",
+    audio: "NM-05 · Présence pure · 12:30",
+    prompt: "Quelle pensée est revenue le plus ? Comment l'as-tu laissée passer ?",
+  },
+  {
+    n: 6, title: "Clarté",
+    subtitle: "Objectifs écrits",
+    finding: { n: 6, title: "Writing goals makes them 42% more likely", fr: "Écrire un objectif le rend 42% plus probable.", ref: "Matthews · Dominican / Harvard derivative" },
+    lede: "L'écriture transforme le désir flou en instruction neurologique. Le cerveau cherche ce qui est déjà nommé.",
+    practice: "Écrire 1 objectif trimestriel au présent, en 3 phrases sensorielles.",
+    audio: "NM-06 · Le futur écrit · 09:20",
+    prompt: "Formule ton objectif comme s'il était déjà vrai.",
+  },
+  {
+    n: 7, title: "Consolidation",
+    subtitle: "Rituel du soir",
+    finding: { n: 7, title: "Sleep consolidates long-term learning", fr: "Le sommeil consolide l'apprentissage à long terme.", ref: "Stickgold · Harvard Medical School" },
+    lede: "Ce qui n'est pas dormi n'est pas appris. Le cerveau nocturne réécrit le jour en circuits durables.",
+    practice: "Rituel du soir 10 min : gratitude + visualisation + respiration lente.",
+    audio: "NM-07 · Portes du sommeil · 14:18",
+    prompt: "Qu'as-tu déposé ce soir ? Qu'as-tu laissé partir ?",
+  },
+  {
+    n: 8, title: "Intégration",
+    subtitle: "Plan de maintenance à vie",
+    finding: { n: 7, title: "The full NeuroManifest day", fr: "Une journée complète NeuroManifest.", ref: "Synthèse · Protocole NM" },
+    lede: "Les sept piliers deviennent une seule journée. Un rythme, pas une discipline. Un terrain, pas un effort.",
+    practice: "Journée NM complète + plan des 12 prochains mois.",
+    audio: "NM-08 · L'ancrage · 16:02",
+    prompt: "Quelle version de toi est sortie de ces 8 semaines ?",
+  },
+];
+
+/* --- TOC / Sommaire --- */
+function TOCPage() {
+  return (
+    <div className="page" data-grain="on" style={{ padding: "var(--pad)" }}>
+      <Running left="NeuroManifest · Sommaire" right="ii" />
+      <div style={{ marginTop: 80 }}>
+        <div className="eyebrow">Sommaire</div>
+        <div style={{ height: 14 }} />
+        <div className="display" style={{ fontSize: 72, color: "var(--deep)", lineHeight: 0.94, letterSpacing: "-0.03em" }}>
+          Huit semaines,<br />
+          <span className="display--italic">sept découvertes.</span>
+        </div>
+      </div>
+
+      <div style={{ marginTop: 56, borderTop: "1px solid var(--rule-paper)" }}>
+        {WEEKS.map((w) => (
+          <div key={w.n} style={{ display: "grid", gridTemplateColumns: "56px 1fr 60px 90px", alignItems: "baseline", padding: "22px 0", borderBottom: "1px solid var(--rule-paper)", gap: 16 }}>
+            <div className="num-mono" style={{ fontSize: 13, color: "var(--deep)", letterSpacing: "0.1em" }}>
+              0{w.n}
+            </div>
+            <div>
+              <div style={{ fontFamily: "var(--ff-display)", fontSize: 22, color: "var(--deep)", letterSpacing: "-0.015em" }}>
+                Semaine {w.n} — {w.title}
+              </div>
+              <div style={{ fontFamily: "var(--ff-display)", fontStyle: "italic", fontSize: 14, color: "var(--muted)", marginTop: 2 }}>
+                {w.subtitle} · Finding {w.finding.n}
+              </div>
+            </div>
+            <div>
+              <GeoGlyph id={w.n} size={22} fg="var(--deep)" />
+            </div>
+            <div className="num-mono" style={{ fontSize: 12, color: "var(--muted)", textAlign: "right", letterSpacing: "0.1em" }}>
+              p. {String(10 + (w.n - 1) * 8).padStart(3, "0")}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div style={{ position: "absolute", bottom: 56, left: 56, right: 56, display: "flex", justifyContent: "space-between", fontFamily: "var(--ff-mono)", fontSize: 10, letterSpacing: "0.2em", color: "var(--muted)", textTransform: "uppercase" }}>
+        <span>Bonus · Trackers · Cartes de poche</span>
+        <span>p. 074 · 080 · 088</span>
+      </div>
+    </div>
+  );
+}
+
+/* --- Week opener : full-bleed dark title page --- */
+function WeekOpener({ week }) {
+  const w = week;
+  return (
+    <div className="page page--dark" data-grain="on" style={{ padding: 0 }}>
+      <Running left={`Semaine ${String(w.n).padStart(2,"0")} · ${w.title}`} right={`0${w.n} / 08`} />
+
+      {/* Giant week number */}
+      <div style={{ position: "absolute", top: 100, left: 56, right: 56 }}>
+        <div className="eyebrow" style={{ color: "var(--cyan)" }}>Semaine · Week</div>
+        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginTop: 20 }}>
+          <div className="display" style={{ fontSize: 320, color: "var(--paper)", letterSpacing: "-0.06em", lineHeight: 0.76 }}>
+            0{w.n}
+          </div>
+          <div style={{ marginTop: 40 }}>
+            <GeoGlyph id={w.n} size={64} fg="var(--cyan)" />
+          </div>
+        </div>
+      </div>
+
+      <div style={{ position: "absolute", top: 520, left: 56, right: 56 }}>
+        <div className="display" style={{ fontSize: 72, color: "var(--paper)", letterSpacing: "-0.035em", lineHeight: 0.92 }}>
+          {w.title}
+        </div>
+        <div style={{ height: 18 }} />
+        <div style={{ fontFamily: "var(--ff-display)", fontStyle: "italic", fontSize: 22, color: "var(--cyan)", letterSpacing: "-0.005em" }}>
+          — {w.subtitle}
+        </div>
+      </div>
+
+      <div style={{ position: "absolute", bottom: 140, left: 56, right: 56, borderTop: "1px solid rgba(246,242,234,0.2)", paddingTop: 22, display: "flex", justifyContent: "space-between", gap: 40 }}>
+        <div style={{ maxWidth: 440 }}>
+          <div className="eyebrow" style={{ color: "rgba(64,224,208,0.8)" }}>
+            Harvard Finding · {String(w.finding.n).padStart(2, "0")}
+          </div>
+          <div style={{ height: 12 }} />
+          <div style={{ fontFamily: "var(--ff-display)", fontSize: 20, color: "var(--paper)", lineHeight: 1.3, letterSpacing: "-0.01em" }}>
+            {w.finding.title}.
+          </div>
+          <div style={{ fontFamily: "var(--ff-display)", fontStyle: "italic", fontSize: 15, color: "rgba(246,242,234,0.7)", lineHeight: 1.4, marginTop: 10 }}>
+            {w.finding.fr}
+          </div>
+        </div>
+        <div style={{ textAlign: "right", minWidth: 180 }}>
+          <div className="eyebrow" style={{ color: "rgba(246,242,234,0.5)" }}>Pratique</div>
+          <div className="num-mono" style={{ fontSize: 22, color: "var(--paper)", marginTop: 10, letterSpacing: "0.02em" }}>
+            10 min
+          </div>
+          <div className="num-mono" style={{ fontSize: 10, color: "rgba(246,242,234,0.55)", letterSpacing: "0.2em", textTransform: "uppercase", marginTop: 2 }}>
+            Par jour
+          </div>
+        </div>
+      </div>
+
+      <Running left={w.finding.ref} right="Source" position="bottom" />
+    </div>
+  );
+}
+
+/* --- Week interior: finding explanation + practice + journal --- */
+function WeekInterior({ week }) {
+  const w = week;
+  return (
+    <div className="page" data-grain="on" style={{ padding: "var(--pad)" }}>
+      <Running left={`NM · Semaine ${String(w.n).padStart(2,"0")} / 08`} right={`${w.title}`} />
+
+      {/* Top header with week progress */}
+      <div style={{ marginTop: 64 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
+          <div className="eyebrow">Semaine {w.n} · {w.subtitle}</div>
+          <div className="num-mono" style={{ fontSize: 10, letterSpacing: "0.18em", color: "var(--muted)", textTransform: "uppercase" }}>
+            Jour 01 · 07
+          </div>
+        </div>
+        <div style={{ height: 10 }} />
+        <ProgressBar value={w.n} total={8} />
+      </div>
+
+      {/* Finding card */}
+      <div style={{ marginTop: 36, display: "grid", gridTemplateColumns: "64px 1fr", gap: 20, alignItems: "flex-start" }}>
+        <div style={{ paddingTop: 6 }}>
+          <GeoGlyph id={w.n} size={44} fg="var(--deep)" />
+          <div className="num-mono" style={{ fontSize: 10, color: "var(--muted)", letterSpacing: "0.16em", marginTop: 8, textTransform: "uppercase" }}>
+            F · 0{w.finding.n}
+          </div>
+        </div>
+        <div>
+          <div className="eyebrow" style={{ color: "var(--cyan-bright)" }}>
+            Harvard Finding · {String(w.finding.n).padStart(2,"0")}
+          </div>
+          <div style={{ height: 10 }} />
+          <div className="display" style={{ fontSize: 38, color: "var(--deep)", lineHeight: 1.02, letterSpacing: "-0.025em" }}>
+            {w.finding.fr}
+          </div>
+          <div style={{ height: 14 }} />
+          <div style={{ fontFamily: "var(--ff-display)", fontStyle: "italic", fontSize: 16, color: "var(--muted)", lineHeight: 1.45, maxWidth: 520 }}>
+            {w.finding.title}
+          </div>
+          <div style={{ height: 22 }} />
+          <div style={{ fontSize: 15, color: "var(--ink-soft)", lineHeight: 1.65, maxWidth: 560 }}>
+            {w.lede}
+          </div>
+          <div className="num-mono" style={{ fontSize: 10, letterSpacing: "0.14em", color: "var(--muted)", textTransform: "uppercase", marginTop: 18 }}>
+            Source · {w.finding.ref}
+          </div>
+        </div>
+      </div>
+
+      <div style={{ height: 34 }} />
+      <hr className="hrule" />
+      <div style={{ height: 30 }} />
+
+      {/* Two-col : practice + audio */}
+      <div style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr", gap: 36 }}>
+        <div>
+          <div className="eyebrow">Exercice du jour</div>
+          <div style={{ height: 10 }} />
+          <div style={{ fontFamily: "var(--ff-display)", fontSize: 22, color: "var(--deep)", lineHeight: 1.3, letterSpacing: "-0.01em" }}>
+            {w.practice}
+          </div>
+          <div style={{ height: 20 }} />
+          <div style={{ display: "flex", gap: 18, alignItems: "center" }}>
+            <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+              <div style={{ width: 28, height: 28, background: "var(--deep)", color: "var(--cyan)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "var(--ff-mono)", fontSize: 11 }}>05</div>
+              <div style={{ fontSize: 12, color: "var(--muted)" }}>min · Présence</div>
+            </div>
+            <div style={{ width: 1, height: 22, background: "var(--rule-paper)" }} />
+            <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+              <div style={{ width: 28, height: 28, background: "var(--cyan)", color: "var(--deep)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "var(--ff-mono)", fontSize: 11 }}>05</div>
+              <div style={{ fontSize: 12, color: "var(--muted)" }}>min · NeuroManifest</div>
+            </div>
+          </div>
+        </div>
+        <div style={{ borderLeft: "1px solid var(--rule-paper)", paddingLeft: 28 }}>
+          <div className="eyebrow">Audio guide</div>
+          <div style={{ height: 10 }} />
+          <div style={{ fontFamily: "var(--ff-display)", fontSize: 17, color: "var(--deep)", lineHeight: 1.3 }}>
+            {w.audio}
+          </div>
+          <div style={{ height: 16 }} />
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <div style={{ width: 30, height: 30, borderRadius: "50%", background: "var(--deep)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <div style={{ width: 0, height: 0, borderLeft: "7px solid var(--cyan)", borderTop: "5px solid transparent", borderBottom: "5px solid transparent", marginLeft: 2 }} />
+            </div>
+            <div style={{ flex: 1, height: 2, background: "var(--rule-paper)", position: "relative" }}>
+              <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: "32%", background: "var(--deep)" }} />
+            </div>
+            <div className="num-mono" style={{ fontSize: 10, color: "var(--muted)" }}>03:47 / 11:42</div>
+          </div>
+        </div>
+      </div>
+
+      <div style={{ height: 30 }} />
+      <hr className="hrule" />
+      <div style={{ height: 26 }} />
+
+      {/* Journal zone */}
+      <div>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
+          <div className="eyebrow">Journal · Réflexion</div>
+          <div className="num-mono" style={{ fontSize: 10, letterSpacing: "0.18em", color: "var(--muted)", textTransform: "uppercase" }}>
+            Date __ / __ / __
+          </div>
+        </div>
+        <div style={{ height: 10 }} />
+        <div style={{ fontFamily: "var(--ff-display)", fontStyle: "italic", fontSize: 17, color: "var(--ink-soft)", letterSpacing: "-0.005em" }}>
+          « {w.prompt} »
+        </div>
+        <div style={{ height: 18 }} />
+        <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+          {Array.from({ length: 7 }).map((_, i) => (
+            <div key={i} style={{ height: 1, background: "var(--rule-paper)" }} />
+          ))}
+        </div>
+      </div>
+
+      {/* Footer */}
+      <div style={{ position: "absolute", bottom: 40, left: 56, right: 56, display: "flex", justifyContent: "space-between", fontFamily: "var(--ff-mono)", fontSize: 10, letterSpacing: "0.18em", color: "var(--muted)", textTransform: "uppercase" }}>
+        <span>Pratique · 10 min / jour</span>
+        <span>— {String(10 + (w.n - 1) * 8 + 2).padStart(3, "0")} —</span>
+      </div>
+    </div>
+  );
+}
+
+Object.assign(window, { WEEKS, TOCPage, WeekOpener, WeekInterior });
+
+</script>
+<script type="text/babel">
+// ============================================================
+// NeuroManifest — Trackers (daily + weekly)
+// ============================================================
+
+function DailyTracker() {
+  const days = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"];
+  return (
+    <div className="page" data-grain="on" style={{ padding: "var(--pad)" }}>
+      <Running left="NM · Tracker quotidien" right="Semaine __ / 08" />
+
+      <div style={{ marginTop: 64 }}>
+        <div className="eyebrow">Tracker · Quotidien</div>
+        <div style={{ height: 14 }} />
+        <div className="display" style={{ fontSize: 64, color: "var(--deep)", letterSpacing: "-0.03em", lineHeight: 0.94 }}>
+          Sept jours,<br />
+          <span className="display--italic">dix minutes.</span>
+        </div>
+        <div style={{ height: 10 }} />
+        <div style={{ fontFamily: "var(--ff-display)", fontStyle: "italic", fontSize: 16, color: "var(--muted)", maxWidth: 540 }}>
+          Coche à la fin de chaque pratique. L'œil voit ce que la main confirme.
+        </div>
+      </div>
+
+      <div style={{ marginTop: 40, borderTop: "1px solid var(--rule-paper)" }}>
+        {/* Header row */}
+        <div style={{ display: "grid", gridTemplateColumns: "120px 1fr 90px 90px 1fr", padding: "14px 0", borderBottom: "1px solid var(--rule-paper)", fontFamily: "var(--ff-mono)", fontSize: 9, letterSpacing: "0.18em", color: "var(--muted)", textTransform: "uppercase" }}>
+          <div>Jour</div>
+          <div>Date · Sensation dominante</div>
+          <div style={{ textAlign: "center" }}>Présence 5'</div>
+          <div style={{ textAlign: "center" }}>NM 5'</div>
+          <div>Note du jour</div>
+        </div>
+
+        {days.map((d, i) => (
+          <div key={d} style={{ display: "grid", gridTemplateColumns: "120px 1fr 90px 90px 1fr", padding: "22px 0", borderBottom: "1px solid var(--rule-paper)", alignItems: "center" }}>
+            <div>
+              <div style={{ fontFamily: "var(--ff-display)", fontSize: 18, color: "var(--deep)" }}>{d}</div>
+              <div className="num-mono" style={{ fontSize: 10, color: "var(--muted)", letterSpacing: "0.14em" }}>J · 0{i+1}</div>
+            </div>
+            <div style={{ borderBottom: "1px dotted var(--rule-paper)", height: 20, marginRight: 20 }} />
+            <div style={{ textAlign: "center" }}>
+              <TickBox size={16} color="var(--deep)" />
+            </div>
+            <div style={{ textAlign: "center" }}>
+              <TickBox size={16} color="var(--cyan-bright)" checked={i === 0} />
+            </div>
+            <div style={{ borderBottom: "1px dotted var(--rule-paper)", height: 20, marginLeft: 12 }} />
+          </div>
+        ))}
+      </div>
+
+      {/* Bottom: week signature */}
+      <div style={{ marginTop: 30, display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 30 }}>
+        <div>
+          <div className="eyebrow">Total semaine</div>
+          <div className="num-mono" style={{ fontSize: 48, color: "var(--deep)", letterSpacing: "-0.02em", marginTop: 8 }}>
+            __ / 14
+          </div>
+          <div style={{ fontSize: 11, color: "var(--muted)", marginTop: 2 }}>pratiques cochées</div>
+        </div>
+        <div>
+          <div className="eyebrow">Cohérence</div>
+          <div style={{ marginTop: 12 }}>
+            <ProgressBar value={3} total={7} color="var(--deep)" />
+          </div>
+          <div style={{ fontSize: 11, color: "var(--muted)", marginTop: 8 }}>Jours consécutifs</div>
+        </div>
+        <div>
+          <div className="eyebrow">Sensation dominante</div>
+          <div style={{ marginTop: 10, display: "flex", flexWrap: "wrap", gap: 8 }}>
+            {["Calme", "Clarté", "Tension", "Élan", "Flou", "Paix"].map(s => (
+              <span key={s} style={{ border: "1px solid var(--rule-paper)", padding: "5px 10px", fontSize: 10, letterSpacing: "0.1em", textTransform: "uppercase", fontFamily: "var(--ff-mono)", color: "var(--ink-soft)" }}>{s}</span>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div style={{ position: "absolute", bottom: 40, left: 56, right: 56, display: "flex", justifyContent: "space-between", fontFamily: "var(--ff-mono)", fontSize: 10, letterSpacing: "0.18em", color: "var(--muted)", textTransform: "uppercase" }}>
+        <span>Tracker · Quotidien</span>
+        <span>— 081 —</span>
+      </div>
+    </div>
+  );
+}
+
+function WeeklyTracker() {
+  const pillars = [
+    { n: 1, label: "Recâblage · Visualisation", v: 5 },
+    { n: 2, label: "Filtrage · Gratitude", v: 4 },
+    { n: 3, label: "Chimie · Posture", v: 3 },
+    { n: 4, label: "Environnement", v: 2 },
+    { n: 5, label: "Présence · Méditation", v: 4 },
+    { n: 6, label: "Clarté · Écriture", v: 3 },
+    { n: 7, label: "Consolidation · Sommeil", v: 5 },
+  ];
+  return (
+    <div className="page" data-grain="on" style={{ padding: "var(--pad)" }}>
+      <Running left="NM · Tracker hebdomadaire" right="7 piliers" />
+
+      <div style={{ marginTop: 64 }}>
+        <div className="eyebrow">Tracker · Hebdomadaire</div>
+        <div style={{ height: 14 }} />
+        <div className="display" style={{ fontSize: 64, color: "var(--deep)", letterSpacing: "-0.03em", lineHeight: 0.94 }}>
+          Les sept piliers,<br />
+          <span className="display--italic">en équilibre.</span>
+        </div>
+      </div>
+
+      <div style={{ marginTop: 40, borderTop: "1px solid var(--rule-paper)" }}>
+        {pillars.map(p => (
+          <div key={p.n} style={{ display: "grid", gridTemplateColumns: "40px 1fr 1fr 40px", padding: "22px 0", borderBottom: "1px solid var(--rule-paper)", alignItems: "center", gap: 18 }}>
+            <GeoGlyph id={p.n} size={22} fg="var(--deep)" />
+            <div style={{ fontFamily: "var(--ff-display)", fontSize: 18, color: "var(--deep)" }}>{p.label}</div>
+            <div style={{ display: "flex", gap: 6 }}>
+              {Array.from({ length: 7 }).map((_, i) => (
+                <div key={i} style={{ flex: 1, height: 18, background: i < p.v ? "var(--deep)" : "rgba(10,37,64,0.08)" }} />
+              ))}
+            </div>
+            <div className="num-mono" style={{ fontSize: 13, color: "var(--deep)", textAlign: "right" }}>{p.v}/7</div>
+          </div>
+        ))}
+      </div>
+
+      <div style={{ marginTop: 32 }}>
+        <div className="eyebrow">Réflexion · Cette semaine</div>
+        <div style={{ height: 10 }} />
+        <div style={{ fontFamily: "var(--ff-display)", fontStyle: "italic", fontSize: 16, color: "var(--ink-soft)" }}>
+          « Où as-tu senti un glissement ? Quel pilier demande plus d'attention la semaine prochaine ? »
+        </div>
+        <div style={{ height: 18 }} />
+        <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+          {Array.from({ length: 5 }).map((_, i) => (
+            <div key={i} style={{ height: 1, background: "var(--rule-paper)" }} />
+          ))}
+        </div>
+      </div>
+
+      <div style={{ position: "absolute", bottom: 40, left: 56, right: 56, display: "flex", justifyContent: "space-between", fontFamily: "var(--ff-mono)", fontSize: 10, letterSpacing: "0.18em", color: "var(--muted)", textTransform: "uppercase" }}>
+        <span>Tracker · Hebdomadaire</span>
+        <span>— 082 —</span>
+      </div>
+    </div>
+  );
+}
+
+Object.assign(window, { DailyTracker, WeeklyTracker });
+
+</script>
+<script type="text/babel">
+// ============================================================
+// NeuroManifest — Bonus pages
+// ============================================================
+
+function EnvAudit() {
+  const sections = [
+    { t: "Chambre à coucher", items: ["Écran hors de la pièce 30 min avant le sommeil", "Température < 19°C", "Lumière chaude uniquement après 21h", "Livre de visualisation à portée de main", "Alarme réveil hors du lit"] },
+    { t: "Espace de travail", items: ["Une seule tâche visible à la fois", "Téléphone en pièce adjacente", "Eau à moins d'un pas", "Lumière naturelle directe", "Un déclencheur de pratique (objet)"] },
+    { t: "Cuisine · Corps", items: ["Fruits en position dominante", "Ultra-transformés hors vue", "Bouteille d'eau pré-remplie", "Café décalé à 9h30", "Verre d'eau avant chaque repas"] },
+    { t: "Rituels · Seuils", items: ["Tapis de méditation déployé la veille", "Journal ouvert à la bonne page", "Playlist audio NM prête", "Vêtements du lendemain préparés", "Premier geste du matin : eau + respiration"] },
+  ];
+  return (
+    <div className="page" data-grain="on" style={{ padding: "var(--pad)" }}>
+      <Running left="NM · Bonus · Audit d'environnement" right="Finding 04" />
+      <div style={{ marginTop: 64 }}>
+        <div className="eyebrow">Bonus · 01</div>
+        <div style={{ height: 12 }} />
+        <div className="display" style={{ fontSize: 58, color: "var(--deep)", letterSpacing: "-0.03em", lineHeight: 0.96 }}>
+          Audit <span className="display--italic">d'environnement.</span>
+        </div>
+        <div style={{ height: 10 }} />
+        <div style={{ fontFamily: "var(--ff-display)", fontStyle: "italic", fontSize: 15, color: "var(--muted)", maxWidth: 520 }}>
+          L'espace façonne l'acte. Coche ce qui est vrai aujourd'hui. Le reste devient ton chantier.
+        </div>
+      </div>
+
+      <div style={{ marginTop: 36, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 28 }}>
+        {sections.map((s, i) => (
+          <div key={s.t} style={{ borderTop: "1px solid var(--rule-paper)", paddingTop: 14 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
+              <div className="eyebrow" style={{ color: "var(--deep)" }}>0{i+1} · {s.t}</div>
+              <GeoGlyph id={i+1} size={16} fg="var(--deep)" />
+            </div>
+            <div style={{ marginTop: 14, display: "flex", flexDirection: "column", gap: 12 }}>
+              {s.items.map((it, j) => (
+                <div key={j} style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
+                  <div style={{ marginTop: 4 }}><TickBox size={14} checked={i === 0 && j < 2} /></div>
+                  <div style={{ fontSize: 13, color: "var(--ink-soft)", lineHeight: 1.45 }}>{it}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div style={{ position: "absolute", bottom: 40, left: 56, right: 56, display: "flex", justifyContent: "space-between", fontFamily: "var(--ff-mono)", fontSize: 10, letterSpacing: "0.18em", color: "var(--muted)", textTransform: "uppercase" }}>
+        <span>Bonus · Audit</span>
+        <span>— 088 —</span>
+      </div>
+    </div>
+  );
+}
+
+function GoalsTemplate() {
+  return (
+    <div className="page" data-grain="on" style={{ padding: "var(--pad)" }}>
+      <Running left="NM · Bonus · Objectifs écrits" right="Finding 06" />
+      <div style={{ marginTop: 64 }}>
+        <div className="eyebrow">Bonus · 02</div>
+        <div style={{ height: 12 }} />
+        <div className="display" style={{ fontSize: 58, color: "var(--deep)", letterSpacing: "-0.03em", lineHeight: 0.96 }}>
+          Écris. <span className="display--italic">Puis relis.</span>
+        </div>
+        <div style={{ height: 10 }} />
+        <div style={{ fontFamily: "var(--ff-display)", fontStyle: "italic", fontSize: 15, color: "var(--muted)", maxWidth: 540 }}>
+          Un objectif écrit est 42% plus probable. Trois phrases suffisent — au présent, au sensoriel, au vrai.
+        </div>
+      </div>
+
+      <div style={{ marginTop: 40, borderTop: "1px solid var(--rule-paper)", paddingTop: 24 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "200px 1fr", rowGap: 28, columnGap: 24 }}>
+          <div className="eyebrow">Horizon</div>
+          <div style={{ display: "flex", gap: 24, flexWrap: "wrap" }}>
+            {["90 jours", "12 mois", "3 ans", "Vie"].map(h => (
+              <div key={h} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <TickBox size={14} checked={h === "90 jours"} />
+                <span style={{ fontSize: 13, color: "var(--ink-soft)", fontFamily: "var(--ff-display)", fontStyle: "italic" }}>{h}</span>
+              </div>
+            ))}
+          </div>
+
+          <div className="eyebrow">Domaine</div>
+          <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+            {["Santé", "Relations", "Œuvre", "Finance", "Élan intérieur"].map(d => (
+              <span key={d} style={{ border: "1px solid var(--rule-paper)", padding: "5px 12px", fontSize: 10, letterSpacing: "0.1em", textTransform: "uppercase", fontFamily: "var(--ff-mono)", color: "var(--ink-soft)" }}>{d}</span>
+            ))}
+          </div>
+
+          <div className="eyebrow">Phrase 01 · L'état</div>
+          <div style={{ borderBottom: "1px solid var(--rule-paper)", paddingBottom: 10, fontFamily: "var(--ff-display)", fontStyle: "italic", fontSize: 17, color: "var(--muted)" }}>
+            « Je suis… »
+          </div>
+
+          <div className="eyebrow">Phrase 02 · Le geste</div>
+          <div style={{ borderBottom: "1px solid var(--rule-paper)", paddingBottom: 10, fontFamily: "var(--ff-display)", fontStyle: "italic", fontSize: 17, color: "var(--muted)" }}>
+            « Chaque jour je… »
+          </div>
+
+          <div className="eyebrow">Phrase 03 · La preuve</div>
+          <div style={{ borderBottom: "1px solid var(--rule-paper)", paddingBottom: 10, fontFamily: "var(--ff-display)", fontStyle: "italic", fontSize: 17, color: "var(--muted)" }}>
+            « Je sais que c'est vrai quand… »
+          </div>
+        </div>
+      </div>
+
+      <div style={{ marginTop: 36, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 30, borderTop: "1px solid var(--rule-paper)", paddingTop: 22 }}>
+        <div>
+          <div className="eyebrow">Sensation corporelle associée</div>
+          <div style={{ height: 14 }} />
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} style={{ borderBottom: "1px solid var(--rule-paper)", height: 28 }} />
+          ))}
+        </div>
+        <div>
+          <div className="eyebrow">Prochain pas · Cette semaine</div>
+          <div style={{ height: 14 }} />
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} style={{ borderBottom: "1px solid var(--rule-paper)", height: 28 }} />
+          ))}
+        </div>
+      </div>
+
+      <div style={{ position: "absolute", bottom: 40, left: 56, right: 56, display: "flex", justifyContent: "space-between", fontFamily: "var(--ff-mono)", fontSize: 10, letterSpacing: "0.18em", color: "var(--muted)", textTransform: "uppercase" }}>
+        <span>Bonus · Objectifs</span>
+        <span>— 090 —</span>
+      </div>
+    </div>
+  );
+}
+
+function EvidenceJournal() {
+  const items = [
+    { d: "17.04", t: "Message de N., opportunité inattendue.", tag: "Filtre" },
+    { d: "18.04", t: "Refus accepté sans contraction.", tag: "Chimie" },
+  ];
+  return (
+    <div className="page" data-grain="on" style={{ padding: "var(--pad)" }}>
+      <Running left="NM · Bonus · Journal des preuves · RAS" right="Finding 02" />
+      <div style={{ marginTop: 64 }}>
+        <div className="eyebrow">Bonus · 03</div>
+        <div style={{ height: 12 }} />
+        <div className="display" style={{ fontSize: 58, color: "var(--deep)", letterSpacing: "-0.03em", lineHeight: 0.96 }}>
+          Le journal <span className="display--italic">des preuves.</span>
+        </div>
+        <div style={{ height: 10 }} />
+        <div style={{ fontFamily: "var(--ff-display)", fontStyle: "italic", fontSize: 15, color: "var(--muted)", maxWidth: 540 }}>
+          Le RAS cherche ce que tu lui donnes à chercher. Note les indices — le monde en produira d'autres.
+        </div>
+      </div>
+
+      <div style={{ marginTop: 36, borderTop: "1px solid var(--rule-paper)" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "70px 1fr 120px 32px", padding: "14px 0", borderBottom: "1px solid var(--rule-paper)", fontFamily: "var(--ff-mono)", fontSize: 9, letterSpacing: "0.18em", color: "var(--muted)", textTransform: "uppercase" }}>
+          <div>Date</div><div>Preuve observée</div><div>Catégorie</div><div style={{ textAlign: "right" }}>✓</div>
+        </div>
+        {items.map((it, i) => (
+          <div key={i} style={{ display: "grid", gridTemplateColumns: "70px 1fr 120px 32px", padding: "18px 0", borderBottom: "1px solid var(--rule-paper)", alignItems: "center" }}>
+            <div className="num-mono" style={{ fontSize: 12, color: "var(--deep)" }}>{it.d}</div>
+            <div style={{ fontFamily: "var(--ff-display)", fontStyle: "italic", fontSize: 15, color: "var(--deep)" }}>{it.t}</div>
+            <div className="num-mono" style={{ fontSize: 10, letterSpacing: "0.14em", color: "var(--muted)", textTransform: "uppercase" }}>{it.tag}</div>
+            <div style={{ textAlign: "right" }}><TickBox size={14} checked /></div>
+          </div>
+        ))}
+        {Array.from({ length: 10 }).map((_, i) => (
+          <div key={i} style={{ display: "grid", gridTemplateColumns: "70px 1fr 120px 32px", padding: "18px 0", borderBottom: "1px solid var(--rule-paper)", alignItems: "center" }}>
+            <div className="num-mono" style={{ fontSize: 12, color: "var(--muted)" }}>__.__</div>
+            <div style={{ borderBottom: "1px dotted var(--rule-paper)", height: 16, marginRight: 16 }} />
+            <div style={{ borderBottom: "1px dotted var(--rule-paper)", height: 16, marginRight: 12 }} />
+            <div style={{ textAlign: "right" }}><TickBox size={14} /></div>
+          </div>
+        ))}
+      </div>
+
+      <div style={{ position: "absolute", bottom: 40, left: 56, right: 56, display: "flex", justifyContent: "space-between", fontFamily: "var(--ff-mono)", fontSize: 10, letterSpacing: "0.18em", color: "var(--muted)", textTransform: "uppercase" }}>
+        <span>Bonus · Journal RAS</span>
+        <span>— 092 —</span>
+      </div>
+    </div>
+  );
+}
+
+/* --- Pocket cards : printable sheet with 7 cards + 1 cover card --- */
+function PocketCards() {
+  const cards = [
+    { n: 1, fr: "Tes pensées recâblent ton cerveau.", en: "Thoughts physically rewire your brain.", act: "Visualiser 5 min, 5 sens." },
+    { n: 2, fr: "La gratitude recalibre ton filtre.", en: "Gratitude tunes your reticular filter.", act: "3 gratitudes précises, au réveil." },
+    { n: 3, fr: "Deux minutes suffisent au corps.", en: "Posture shifts hormones in 2 minutes.", act: "Posture ouverte · respiration 4-7-8." },
+    { n: 4, fr: "L'environnement décide pour toi.", en: "Environment outranks willpower.", act: "Retire 1 friction. Ajoute 1 déclencheur." },
+    { n: 5, fr: "Huit semaines changent ton cerveau.", en: "8 weeks reshape brain density.", act: "5 min Présence + 5 min scan corporel." },
+    { n: 6, fr: "Écrire, c'est déjà commencer.", en: "Written goals: +42% probability.", act: "1 objectif, 3 phrases, au présent." },
+    { n: 7, fr: "Le sommeil écrit en dur.", en: "Sleep consolidates learning.", act: "Rituel du soir · 10 min · gratitude + visualisation." },
+  ];
+  return (
+    <div className="page" data-grain="on" style={{ padding: "var(--pad)" }}>
+      <Running left="NM · Cartes de poche · 7 findings" right="À découper" />
+
+      <div style={{ marginTop: 60 }}>
+        <div className="eyebrow">Bonus · 04</div>
+        <div style={{ height: 10 }} />
+        <div className="display" style={{ fontSize: 46, color: "var(--deep)", letterSpacing: "-0.03em", lineHeight: 0.96 }}>
+          Cartes <span className="display--italic">de poche.</span>
+        </div>
+        <div style={{ height: 8 }} />
+        <div style={{ fontFamily: "var(--ff-mono)", fontSize: 10, letterSpacing: "0.18em", color: "var(--muted)", textTransform: "uppercase" }}>
+          Découper · plastifier · glisser dans une poche
+        </div>
+      </div>
+
+      <div style={{ marginTop: 28, display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 14 }}>
+        {/* Cover card */}
+        <div style={{ background: "var(--deep)", color: "var(--paper)", padding: 18, aspectRatio: "1.6 / 1", display: "flex", flexDirection: "column", justifyContent: "space-between", border: "1px dashed rgba(255,255,255,0)", boxShadow: "0 0 0 1px rgba(10,37,64,0.14)" }}>
+          <div className="eyebrow" style={{ color: "var(--cyan)" }}>NeuroManifest · Deck</div>
+          <div>
+            <div className="display" style={{ fontSize: 26, letterSpacing: "-0.025em", lineHeight: 0.95 }}>
+              Sept <span className="display--italic">découvertes.</span>
+            </div>
+            <div style={{ fontFamily: "var(--ff-mono)", fontSize: 9, letterSpacing: "0.2em", color: "rgba(246,242,234,0.6)", textTransform: "uppercase", marginTop: 8 }}>
+              Harvard · 2 mois · 10 min/jour
+            </div>
+          </div>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+            <BrainMark size={56} stroke="var(--cyan)" accent="var(--cyan)" />
+            <div className="num-mono" style={{ fontSize: 10, color: "rgba(246,242,234,0.6)" }}>00 / 07</div>
+          </div>
+        </div>
+
+        {cards.map(c => (
+          <div key={c.n} style={{ background: "var(--paper-2)", padding: 16, aspectRatio: "1.6 / 1", display: "flex", flexDirection: "column", justifyContent: "space-between", boxShadow: "0 0 0 1px rgba(10,37,64,0.14)", position: "relative" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+              <div>
+                <div className="num-mono" style={{ fontSize: 9, color: "var(--muted)", letterSpacing: "0.2em", textTransform: "uppercase" }}>Finding</div>
+                <div className="display" style={{ fontSize: 38, color: "var(--deep)", letterSpacing: "-0.03em", lineHeight: 0.9 }}>0{c.n}</div>
+              </div>
+              <GeoGlyph id={c.n} size={18} fg="var(--deep)" />
+            </div>
+            <div>
+              <div style={{ fontFamily: "var(--ff-display)", fontSize: 15, color: "var(--deep)", lineHeight: 1.15, letterSpacing: "-0.01em" }}>
+                {c.fr}
+              </div>
+              <div style={{ fontFamily: "var(--ff-display)", fontStyle: "italic", fontSize: 11, color: "var(--muted)", marginTop: 4, lineHeight: 1.3 }}>
+                {c.en}
+              </div>
+            </div>
+            <div style={{ borderTop: "1px solid var(--rule-paper)", paddingTop: 8, fontFamily: "var(--ff-mono)", fontSize: 9, letterSpacing: "0.14em", color: "var(--deep)", textTransform: "uppercase" }}>
+              → {c.act}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div style={{ position: "absolute", bottom: 36, left: 56, right: 56, display: "flex", justifyContent: "space-between", fontFamily: "var(--ff-mono)", fontSize: 10, letterSpacing: "0.18em", color: "var(--muted)", textTransform: "uppercase" }}>
+        <span>Cartes · 85 × 55 mm</span>
+        <span>— 094 —</span>
+      </div>
+    </div>
+  );
+}
+
+Object.assign(window, { EnvAudit, GoalsTemplate, EvidenceJournal, PocketCards });
+
+</script>
 
 <script type="text/babel">
 /* ============================================================
