@@ -84,6 +84,7 @@
 .page {
   width: var(--pg-w);
   height: var(--pg-h);
+  box-sizing: border-box;
   background: var(--paper);
   color: var(--ink);
   position: relative;
