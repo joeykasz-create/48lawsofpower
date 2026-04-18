@@ -176,6 +176,51 @@
     .stage { transform: scale(0.55); transform-origin: top center; margin-bottom: -520px; }
     .tweaks { width: 260px; right: 12px; top: 12px; }
   }
+
+  /* ---------- Print / PDF export ----------
+     Activated either by ?print=1 (body gets .is-print) or by @media print. */
+  .is-print { background: #fff; }
+  .is-print .viewer {
+    padding: 0; background: #fff; min-height: auto;
+  }
+  .is-print .viewer__title,
+  .is-print .chapters,
+  .is-print .toolbar,
+  .is-print .tweaks { display: none !important; }
+  .is-print .stage { display: block; min-height: auto; perspective: none; }
+  .is-print .book { width: 794px; height: auto; position: static; transform-style: flat; }
+  .is-print .book__page-wrap {
+    position: static;
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+    page-break-after: always;
+    break-after: page;
+  }
+  .is-print .book__page-wrap:last-child { page-break-after: auto; break-after: auto; }
+  .is-print .page { box-shadow: none; border-radius: 0; }
+
+  @media print {
+    @page { size: 794px 1123px; margin: 0; }
+    html, body { background: #fff; }
+    .viewer { padding: 0; background: #fff; }
+    .viewer__title, .chapters, .toolbar, .tweaks { display: none !important; }
+    .stage { display: block; min-height: auto; perspective: none; }
+    .book { width: 794px; height: auto; position: static; }
+    .book__page-wrap {
+      position: static;
+      opacity: 1 !important;
+      transform: none !important;
+      page-break-after: always;
+      break-after: page;
+    }
+    .book__page-wrap:last-child { page-break-after: auto; break-after: auto; }
+    .page {
+      box-shadow: none; border-radius: 0;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+  }
 </style>
 </head>
 <body>
@@ -264,6 +309,14 @@ function App() {
   const [idx, setIdx] = usePersistentState("nm.idx.v1", 0);
   const [showTweaks, setShowTweaks] = useState(true);
   const [editMode, setEditMode] = useState(false);
+  const isPrint = useMemo(() => {
+    if (typeof window === "undefined") return false;
+    return new URLSearchParams(window.location.search).get("print") === "1";
+  }, []);
+  useEffect(() => {
+    if (isPrint) document.body.classList.add("is-print");
+    else document.body.classList.remove("is-print");
+  }, [isPrint]);
 
   // sync to host TWEAK_DEFAULTS block for persistence
   useEffect(() => {
@@ -332,10 +385,10 @@ function App() {
         <div className="book">
           {pages.map((p, i) => {
             const cls = i === safeIdx ? "is-current" : i < safeIdx ? "is-prev" : "is-next";
-            // Render only near pages for performance
-            if (Math.abs(i - safeIdx) > 1) return null;
+            // Render only near pages for performance (all pages in print mode)
+            if (!isPrint && Math.abs(i - safeIdx) > 1) return null;
             return (
-              <div key={p.id} className={`book__page-wrap ${cls}`}>
+              <div key={p.id} className={`book__page-wrap ${isPrint ? "is-current" : cls}`}>
                 <div {...pageProps} style={{ display: "flex", justifyContent: "center" }}>
                   <PageSkin grain={tweaks.grain}>
                     {p.render()}
