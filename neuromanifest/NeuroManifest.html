@@ -344,47 +344,107 @@
   }
 
   /* ---------- Print / PDF export ----------
-     Activated either by ?print=1 (body gets .is-print) or by @media print. */
+     Activated either by ?print=1 (body gets .is-print) or by @media print.
+     Uses mm units everywhere to force exact A4 geometry regardless of
+     how the browser maps CSS px to paper. */
   .is-print { background: #fff; }
   .is-print .viewer {
-    padding: 0; background: #fff; min-height: auto;
+    padding: 0 !important; margin: 0 !important;
+    background: #fff; min-height: auto;
   }
   .is-print .viewer__title,
   .is-print .chapters,
   .is-print .toolbar,
   .is-print .tweaks { display: none !important; }
-  .is-print .stage { display: block; min-height: auto; perspective: none; }
-  .is-print .book { width: 794px; height: auto; position: static; transform-style: flat; }
+  .is-print .stage {
+    display: block !important; min-height: auto; perspective: none;
+    margin: 0 !important; padding: 0 !important;
+  }
+  .is-print .book {
+    width: 210mm !important; height: auto !important;
+    position: static !important; transform-style: flat;
+    margin: 0 !important; padding: 0 !important;
+  }
   .is-print .book__page-wrap {
-    position: static;
+    position: static !important;
     opacity: 1 !important;
     transform: none !important;
     transition: none !important;
+    width: 210mm !important;
+    height: 297mm !important;
+    overflow: hidden !important;
     page-break-after: always;
     break-after: page;
+    page-break-inside: avoid;
+    break-inside: avoid;
   }
-  .is-print .book__page-wrap:last-child { page-break-after: auto; break-after: auto; }
-  .is-print .page { box-shadow: none; border-radius: 0; }
+  .is-print .book__page-wrap > div {
+    width: 210mm !important;
+    height: 297mm !important;
+    display: block !important;
+  }
+  .is-print .book__page-wrap:last-child {
+    page-break-after: auto; break-after: auto;
+  }
+  .is-print .page {
+    width: 210mm !important;
+    height: 297mm !important;
+    box-sizing: border-box !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+  }
 
   @media print {
-    @page { size: A4; margin: 0; }
-    html, body { background: #fff; }
-    .viewer { padding: 0; background: #fff; }
+    @page { size: 210mm 297mm; margin: 0; }
+    html, body {
+      background: #fff !important;
+      margin: 0 !important; padding: 0 !important;
+      width: 210mm !important;
+    }
+    .viewer {
+      padding: 0 !important; margin: 0 !important;
+      background: #fff !important;
+    }
     .viewer__title, .chapters, .toolbar, .tweaks { display: none !important; }
-    .stage { display: block; min-height: auto; perspective: none; }
-    .book { width: 794px; height: auto; position: static; }
+    .stage {
+      display: block !important; min-height: auto; perspective: none;
+      margin: 0 !important; padding: 0 !important;
+    }
+    .book {
+      width: 210mm !important; height: auto !important;
+      position: static !important;
+      margin: 0 !important; padding: 0 !important;
+    }
     .book__page-wrap {
-      position: static;
+      position: static !important;
       opacity: 1 !important;
       transform: none !important;
+      width: 210mm !important;
+      height: 297mm !important;
+      overflow: hidden !important;
       page-break-after: always;
       break-after: page;
+      page-break-inside: avoid;
+      break-inside: avoid;
     }
-    .book__page-wrap:last-child { page-break-after: auto; break-after: auto; }
+    .book__page-wrap > div {
+      width: 210mm !important;
+      height: 297mm !important;
+      display: block !important;
+    }
+    .book__page-wrap:last-child {
+      page-break-after: auto; break-after: auto;
+    }
     .page {
-      box-shadow: none; border-radius: 0;
-      -webkit-print-color-adjust: exact;
-      print-color-adjust: exact;
+      width: 210mm !important;
+      height: 297mm !important;
+      box-sizing: border-box !important;
+      box-shadow: none !important;
+      border-radius: 0 !important;
+      margin: 0 !important;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
     }
   }
 </style>
